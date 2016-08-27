@@ -14,8 +14,11 @@
 #   about_triangle_project_2.rb
 #
 def triangle(a, b, c)
-  # if ((a + b + c) / 3) == a
-  #   :equilateral
+  raise TriangleError if [a,b,c].min <= 0
+  first_side, second_side, third_side = [a,b,c].sort
+
+  raise TriangleError if first_side + second_side <= third_side
+
   if a != b && c != b && a != c
     :scalene
   elsif a == b && c == b
