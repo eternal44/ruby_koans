@@ -32,46 +32,26 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 def score(dice)
   score = 0
 
-  rolls = {
-    1 => 0,
-    2 => 0,
-    3 => 0,
-    4 => 0,
-    5 => 0,
-    6 => 0
-  }
+  grouped = dice.inject({}) do |map, roll|
+    if map[roll]
+      map[roll] = map[roll] + 1
+    else
+      map[roll] = 1
+    end
 
-  dice.each do |roll|
-    old_count = rolls[roll]
-    rolls[roll] = old_count + 1
+    map
   end
 
-  remaining = 0
-  sets_of_three = 0
-  puts "roll #{rolls}"
+  grouped.each do |key, val|
+    if val <= 2
+      score += val * 50 if key == 5
+      score += val * 100 if key == 1
+    else
+      set_of_three = val / 3
+      remaining = key == 5 || key == 1? val % 3 : 0
 
-  rolls.each do |key, val|
-    next if val == 0
-
-    if key == 1
-      sets_of_three = val / 3
-      remaining = val % 3
-
-      score += (1000 * sets_of_three) + (remaining * 100)
-    elsif key == 5
-      sets_of_three = val / 3
-      remaining = val % 3
-
-      if sets_of_three > 0
-        score += (sets_of_three * 500) + (remaining * 50)
-      else
-        score += val * 50
-      end
-
-    elsif key.to_s[/[2-46]/]
-      sets_of_three = val / 3
-
-      score += sets_of_three * key * 100
+      score += set_of_three * 1000 + remaining * 100 if key == 1
+      score += set_of_three * key * 100 + remaining * 50 if key > 1
     end
   end
 
