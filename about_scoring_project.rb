@@ -33,11 +33,7 @@ def score(dice)
   score = 0
 
   grouped = dice.inject({}) do |map, roll|
-    if map[roll]
-      map[roll] = map[roll] + 1
-    else
-      map[roll] = 1
-    end
+    map[roll] = map[roll] ? map[roll] + 1 : 1
 
     map
   end
@@ -48,10 +44,13 @@ def score(dice)
       score += val * 100 if key == 1
     else
       set_of_three = val / 3
-      remaining = key == 5 || key == 1? val % 3 : 0
+      remaining = key == 5 || key == 1 ? val % 3 : 0
 
-      score += set_of_three * 1000 + remaining * 100 if key == 1
-      score += set_of_three * key * 100 + remaining * 50 if key > 1
+      if key == 1
+        score += set_of_three * 1000 + remaining * 100
+      else
+        score += set_of_three * key * 100 + remaining * 50
+      end
     end
   end
 
